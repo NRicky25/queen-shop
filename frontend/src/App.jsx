@@ -1,15 +1,17 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+
 import HomePage from "./pages/HomePage";
-import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 import AdminPage from "./pages/AdminPage";
-import CatagoryPage from "./pages/CategoryPage";
-import CartPage from "./pages/CartPage";
+import CategoryPage from "./pages/CategoryPage";
+
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
 import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner";
+import CartPage from "./pages/CartPage";
 import { useCartStore } from "./stores/useCartStore";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
@@ -54,7 +56,7 @@ function App() {
               user?.role === "admin" ? <AdminPage /> : <Navigate to="/" />
             }
           />
-          <Route path="/category/:category" element={<CatagoryPage />} />
+          <Route path="/category/:category" element={<CategoryPage />} />
           <Route
             path="/cart"
             element={user ? <CartPage /> : <Navigate to="/login" />}

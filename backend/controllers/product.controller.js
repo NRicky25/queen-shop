@@ -13,29 +13,49 @@ export const getAllProducts = async (req, res) => {
 };
 //.lean() convert mongoose object to javascript object instead of mongoose schema
 
+// export const getFeaturedProducts = async (req, res) => {
+//   try {
+//     let featuredProducts = await redis.get("featured_products");
+//     if (featuredProducts) {
+//       return res.json(JSON.parse(featuredProducts));
+//     }
+
+//     // if not in redis, fetch from mongodb
+//     // .lean() is gonna return a plain javascript object instead of a mongodb document
+//     // which is good for performance
+//     featuredProducts = await Product.find({ isFeatured: true }).lean();
+
+//     if (!featuredProducts) {
+//       return res.status(404).json({ message: "No featured products found" });
+//     }
+
+//     // store in redis for future quick access
+
+//     await redis.set("featured_products", JSON.stringify(featuredProducts));
+
+//     res.json(featuredProducts);
+//   } catch (error) {
+//     console.log("Error in getFeaturedProducts controller", error.message);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
 export const getFeaturedProducts = async (req, res) => {
   try {
     let featuredProducts = await redis.get("featured_products");
     if (featuredProducts) {
       return res.json(JSON.parse(featuredProducts));
     }
-
-    // if not in redis, fetch from mongodb
-    // .lean() is gonna return a plain javascript object instead of a mongodb document
-    // which is good for performance
+    // If not in Redis, fetch from MongoDB
     featuredProducts = await Product.find({ isFeatured: true }).lean();
-
     if (!featuredProducts) {
       return res.status(404).json({ message: "No featured products found" });
     }
-
-    // store in redis for future quick access
-
+    // Store the result in Redis for future use
     await redis.set("featured_products", JSON.stringify(featuredProducts));
-
+    // Return the newly fetched data
     res.json(featuredProducts);
   } catch (error) {
-    console.log("Error in getFeaturedProducts controller", error.message);
+    console.error("Error in getFeaturedProducts controller", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -180,7 +200,7 @@ export const toggleFeaturedProduct = async (req, res) => {
 async function updateFeatureProductsCache() {
   try {
     const featureProducts = await Product.find({ isFeatured: true }).lean();
-    await redis.set("feature_products", JSON.stringify(featureProducts));
+    await redis.set("featured_products", JSON.stringify(featureProducts)); // Fix here
   } catch (error) {
     console.log("error in updating feature products cache:", error.message);
   }

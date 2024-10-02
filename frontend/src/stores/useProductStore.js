@@ -58,58 +58,75 @@ export const useProductStore = create((set) => ({
       toast.error(error.response.data.error || "Failed to delete product");
     }
   },
-  toggleFeaturedProduct: async (productId) => {
-    // Optimistically toggle the UI immediately
-    set((prevProducts) => ({
-      loading: true,
-      products: prevProducts.products.map((product) =>
-        product._id === productId
-          ? { ...product, isFeatured: !product.isFeatured } // Toggle the isFeatured state
-          : product
-      ),
-    }));
+  // toggleFeaturedProduct: async (productId) => {
+  //   // Optimistically toggle the UI immediately
+  //   set((prevProducts) => ({
+  //     loading: true,
+  //     products: prevProducts.products.map((product) =>
+  //       product._id === productId
+  //         ? { ...product, isFeatured: !product.isFeatured } // Toggle the isFeatured state
+  //         : product
+  //     ),
+  //   }));
 
+  //   try {
+  //     const response = await axios.patch(`/products/${productId}`);
+
+  //     console.log("Server response:", response.data); // Debugging step to ensure correct response
+
+  //     // Update state with server response
+  //     set((prevProducts) => ({
+  //       products: prevProducts.products.map((product) =>
+  //         product._id === productId
+  //           ? { ...product, isFeatured: response.data.isFeatured } // Update with server's value
+  //           : product
+  //       ),
+  //       loading: false,
+  //     }));
+  //     if (toastId) toast.dismiss(toastId);
+  //     toastId = toast.success("Product updated successfully");
+  //   } catch (error) {
+  //     console.error("Error:", error.response?.data?.error || error.message);
+
+  //     // Rollback the optimistic update on failure
+  //     set((prevProducts) => ({
+  //       products: prevProducts.products.map((product) =>
+  //         product._id === productId
+  //           ? { ...product, isFeatured: !product.isFeatured } // Revert the optimistic toggle
+  //           : product
+  //       ),
+  //       loading: false,
+  //     }));
+
+  //     toast.error("Failed to update product");
+  //   }
+  // },
+  toggleFeaturedProduct: async (productId) => {
+    set({ loading: true });
     try {
       const response = await axios.patch(`/products/${productId}`);
-
-      console.log("Server response:", response.data); // Debugging step to ensure correct response
-
-      // Update state with server response
+      // this will update the isFeatured prop of the product
       set((prevProducts) => ({
         products: prevProducts.products.map((product) =>
           product._id === productId
-            ? { ...product, isFeatured: response.data.isFeatured } // Update with server's value
+            ? { ...product, isFeatured: response.data.isFeatured }
             : product
         ),
         loading: false,
       }));
-      if (toastId) toast.dismiss(toastId);
-      toastId = toast.success("Product updated successfully");
     } catch (error) {
-      console.error("Error:", error.response?.data?.error || error.message);
-
-      // Rollback the optimistic update on failure
-      set((prevProducts) => ({
-        products: prevProducts.products.map((product) =>
-          product._id === productId
-            ? { ...product, isFeatured: !product.isFeatured } // Revert the optimistic toggle
-            : product
-        ),
-        loading: false,
-      }));
-
-      toast.error("Failed to update product");
+      set({ loading: false });
+      toast.error(error.response.data.error || "Failed to update product");
     }
   },
-
   fetchFeaturedProducts: async () => {
-    set({ loading: true });
+    set({ loading: true }); // Clear previous errors and set loading to true
     try {
       const response = await axios.get("/products/featured");
       set({ products: response.data, loading: false });
     } catch (error) {
       set({ error: "Failed to fetch products", loading: false });
-      console.log("Error fetching featured products:", error);
+      console.error("Error fetching featured products:", error.message);
     }
   },
 }));
