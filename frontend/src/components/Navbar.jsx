@@ -11,8 +11,11 @@ const Navbar = () => {
   return (
     <header className="fixed top-0 left-0 w-full bg-black bg-opcaity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="">
+        <div className="flex flex-col sm:flex-row items-center justify-between">
+          <Link
+            to="/"
+            className="text-xl font-bold mb-2 sm:mb-0 bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent"
+          >
             ♔ Queen
           </Link>
           <nav className="flex flex-wrap items-center gap-4">
